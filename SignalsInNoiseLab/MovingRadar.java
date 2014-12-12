@@ -5,7 +5,7 @@
  * @author @gcschmit
  * @version 19 July 2014
  */
-public class Radar
+public class MovingRadar
 {
     
     // stores whether each cell triggered detection for the current scan of the radar
@@ -23,6 +23,9 @@ public class Radar
     
     // number of scans of the radar since construction
     private int numScans;
+    
+    private int dy;
+    private int dx;
 
     /**
      * Constructor for objects of class Radar
@@ -30,7 +33,7 @@ public class Radar
      * @param   rows    the number of rows in the radar grid
      * @param   cols    the number of columns in the radar grid
      */
-    public Radar(int rows, int cols)
+    public MovingRadar(int rows, int cols)
     {
         // initialize instance variables
         currentScan = new boolean[rows][cols]; // elements will be set to false
@@ -41,7 +44,10 @@ public class Radar
         monsterLocationRow = (int)(Math.random() * rows);
         monsterLocationCol = (int)(Math.random() * cols);
         
-        noiseFraction = .05;
+        dy = (int)(Math.random() * 5);
+        dx = (int)(Math.random() * 5);
+        
+        noiseFraction = 0.05;
         numScans= 0;
     }
     
@@ -59,6 +65,9 @@ public class Radar
                 currentScan[row][col] = false;
             }
         }
+        //update monster location
+        
+        updateMonsterLocation(dy,dx);
         
         // detect the monster
         currentScan[monsterLocationRow][monsterLocationCol] = true;
@@ -81,6 +90,7 @@ public class Radar
         // keep track of the total number of scans
         numScans++;
     }
+    
 
     /**
      * Sets the location of the monster
@@ -98,6 +108,20 @@ public class Radar
         // update the radar grid to show that something was detected at the specified location
         currentScan[row][col] = true;
     }
+    
+    /**
+     * Updates the location of the monster
+     * 
+     * @param   dy     how much the monstor will move in the y
+     * @param   dx      how much the monstor will move in the x
+     * @pre row and col must be within the bounds of the radar grid
+     */
+    public void updateMonsterLocation(float dy,float dx)
+    {
+        monsterLocationRow += dx;
+        monsterLocationCol += dy;
+    }
+    
     
      /**
      * Sets the probability that a given cell will generate a false detection
