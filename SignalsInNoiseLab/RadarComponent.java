@@ -16,7 +16,7 @@ public class RadarComponent extends JComponent
     static final int CELL_WIDTH = 5;
     static final int CELL_HEIGHT = 5;
 
-    Radar radar;
+    MovingRadar radar;
     
     /**
      * Constructor
@@ -25,14 +25,14 @@ public class RadarComponent extends JComponent
      * @pre the specified radar object must be non-null
      * 
      */
-    public RadarComponent(Radar radar)
+    public RadarComponent(MovingRadar radar)
     {
         this.radar = radar;
     }
     
     /**
      * Overrides JComponent's getPreferredSize method to return a size large enough to encapsulate
-     *  two radar grids side by side
+     *  two radar grids side by sidezzzzzzz
      *
      * @returns the preferred size for the component
      * 

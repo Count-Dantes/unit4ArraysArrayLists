@@ -13,6 +13,9 @@ public class MovingRadar
     
     // value of each cell is incremented for each scan in which that cell triggers detection 
     private int[][] accumulator;
+    private boolean[][] lastScan;
+    
+    private int[][] dydx = new int[11][11];
     
     // location of the monster
     private int monsterLocationRow;
@@ -38,7 +41,7 @@ public class MovingRadar
         // initialize instance variables
         currentScan = new boolean[rows][cols]; // elements will be set to false
         accumulator = new int[rows][cols]; // elements will be set to 0
-        
+        lastScan = new boolean[rows][cols];
         // randomly set the location of the monster (can be explicity set through the
         //  setMonsterLocation method
         monsterLocationRow = (int)(Math.random() * rows);
@@ -57,6 +60,14 @@ public class MovingRadar
      */
     public void scan()
     {
+        // sets last scan to be the current scan
+        for(int row = 0; row < currentScan.length; row++)
+        {
+            for (int col = 0; col < currentScan[0].length; col++)
+            {
+                lastScan[row][col] = currentScan[row][col];
+            }
+        }
         // zero the current scan grid
         for(int row = 0; row < currentScan.length; row++)
         {
@@ -75,14 +86,53 @@ public class MovingRadar
         // inject noise into the grid
         injectNoise();
         
-        // udpate the accumulator
+        // udpate the dydx array
         for(int row = 0; row < currentScan.length; row++)
         {
             for(int col = 0; col < currentScan[0].length; col++)
             {
-                if(currentScan[row][col] == true)
+                if(lastScan[row][col] == true)
                 {
-                   accumulator[row][col]++;
+                    for (int testDx = 1; testDx <= 5; testDx++)
+                    {
+                        for (int testDy = 1; testDy <=5; testDy++)
+                        {
+                            if (currentScan[row+testDx][col+testDy] == true)
+                            {
+                                dydx[testDx+5][testDy+5] +=1;
+                            }  
+                        }
+                    }
+                    for (int testDx = -1; testDx >= -5; testDx--)
+                    {
+                        for (int testDy = -1; testDy >=-5; testDy--)
+                        {
+                            if (currentScan[row+testDx][col+testDy] == true)
+                            {
+                                dydx[testDx+5][testDy+5] +=1;
+                            }  
+                        }
+                    }
+                    for (int testDx = -5; testDx <=5; testDx +=1)
+                    {
+                        if(testDx != 0)
+                        {
+                            if (currentScan[row+testDx][0] == true)
+                            {
+                                dydx[testDx+5][0+5] += 1;
+                            }
+                        }
+                    }
+                    for (int testDy = -5; testDy <=5; testDy +=1)
+                    {
+                        if(testDy != 0)
+                        {
+                            if (currentScan[row+testDy][0] == true)
+                            {
+                                dydx[0+5][testDy+5] += 1;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -158,6 +208,28 @@ public class MovingRadar
     public int getAccumulatedDetection(int row, int col)
     {
         return accumulator[row][col];
+    }
+    
+    public int[] returnDyDx()
+    {
+        int highestValue = 0;
+        int highDy = 0;
+        int highDx = 0;
+        for(int row = 0; row <= 11; row++)
+        {
+            for (int col = 0; col <= 11; col++)
+            {
+                if (dydx[row][col] > highestValue)
+                {
+                    highDy = row;
+                    highDx = col;
+                }
+            }
+        }
+        int[] returnValue = new int[2];
+        returnValue[0] = highDy;
+        returnValue[1] = highDx;
+        return returnValue;
     }
     
     /**

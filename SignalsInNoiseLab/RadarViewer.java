@@ -1,5 +1,5 @@
 import javax.swing.JFrame;
-
+import java.util.Scanner;
 /**
  * Class that contains the main method for the program and creates the frame containing the component.
  * 
@@ -14,10 +14,11 @@ public class RadarViewer
      */
     public static void main(String[] args) throws InterruptedException
     {
+        Scanner in = new Scanner(System.in);
         // create the radar, set the monster location, and perform the initial scan
         final int ROWS = 100;
         final int COLS = 100;
-        Radar radar = new Radar(ROWS, COLS);
+        MovingRadar radar = new MovingRadar(ROWS, COLS);
         radar.setNoiseFraction(0.10);
         radar.scan();
         
@@ -39,7 +40,7 @@ public class RadarViewer
         
         // perform 100 scans of the radar wiht a slight pause between each
         // after each scan, instruct the Java Run-Time to redraw the window
-        for(int i = 0; i < 100; i++)
+        for(int i = 0; i < 20; i++)
         {
             Thread.sleep(100); // sleep 100 milliseconds (1/10 second)
             
@@ -47,6 +48,8 @@ public class RadarViewer
             
             frame.repaint();
         }
+        System.out.println(radar.returnDyDx[0]);
+        System.out.println(
     }
 
 }
