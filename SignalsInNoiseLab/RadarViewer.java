@@ -48,8 +48,8 @@ public class RadarViewer
             
             frame.repaint();
         }
-        System.out.println(radar.returnDyDx[0]);
-        System.out.println(
+ 
+        System.out.println(radar.returnDyDx[1]);
     }
 
 }
