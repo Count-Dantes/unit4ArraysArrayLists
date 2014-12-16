@@ -36,7 +36,10 @@ public class MovingRadar
      * @param   rows    the number of rows in the radar grid
      * @param   cols    the number of columns in the radar grid
      */
-    public MovingRadar(int rows, int cols)
+    public MovingRadar(
+        int rows, int cols,
+        int DY, int DX,
+        int startCol, int startRow)
     {
         // initialize instance variables
         currentScan = new boolean[rows][cols]; // elements will be set to false
@@ -44,11 +47,11 @@ public class MovingRadar
         lastScan = new boolean[rows][cols];
         // randomly set the location of the monster (can be explicity set through the
         //  setMonsterLocation method
-        monsterLocationRow = (int)(Math.random() * rows);
-        monsterLocationCol = (int)(Math.random() * cols);
+        monsterLocationRow = startCol;
+        monsterLocationCol = startRow;
         
-        dy = (int)(Math.random() * 5);
-        dx = (int)(Math.random() * 5);
+        dy = DY;
+        dx = DX;
         
         noiseFraction = 0.05;
         numScans= 0;
@@ -61,9 +64,9 @@ public class MovingRadar
     public void scan()
     {
         // sets last scan to be the current scan
-        for(int row = 0; row < currentScan.length; row++)
+        for(int row = 0; row < currentScan.length-5; row++)
         {
-            for (int col = 0; col < currentScan[0].length; col++)
+            for (int col = 0; col < currentScan[0].length-5; col++)
             {
                 lastScan[row][col] = currentScan[row][col];
             }
@@ -81,8 +84,18 @@ public class MovingRadar
         updateMonsterLocation(dy,dx);
         
         // detect the monster
-        currentScan[monsterLocationRow][monsterLocationCol] = true;
-        
+        if ( (monsterLocationRow < currentScan.length) && 
+             (monsterLocationCol < currentScan[0].length)&&
+             (monsterLocationRow > 5)&&
+             (monsterLocationCol > 5)
+           )
+        {
+            currentScan[monsterLocationRow][monsterLocationCol] = true;
+        }
+        else
+        {
+            return;
+        }
         // inject noise into the grid
         injectNoise();
         
@@ -93,44 +106,14 @@ public class MovingRadar
             {
                 if(lastScan[row][col] == true)
                 {
-                    for (int testDx = 1; testDx <= 5; testDx++)
+                    for (int testDx = -5; testDx <= 5; testDx++)
                     {
-                        for (int testDy = 1; testDy <=5; testDy++)
+                        for (int testDy = -5; testDy <=5; testDy++)
                         {
                             if (currentScan[row+testDx][col+testDy] == true)
                             {
                                 dydx[testDx+5][testDy+5] +=1;
                             }  
-                        }
-                    }
-                    for (int testDx = -1; testDx >= -5; testDx--)
-                    {
-                        for (int testDy = -1; testDy >=-5; testDy--)
-                        {
-                            if (currentScan[row+testDx][col+testDy] == true)
-                            {
-                                dydx[testDx+5][testDy+5] +=1;
-                            }  
-                        }
-                    }
-                    for (int testDx = -5; testDx <=5; testDx +=1)
-                    {
-                        if(testDx != 0)
-                        {
-                            if (currentScan[row+testDx][0] == true)
-                            {
-                                dydx[testDx+5][0+5] += 1;
-                            }
-                        }
-                    }
-                    for (int testDy = -5; testDy <=5; testDy +=1)
-                    {
-                        if(testDy != 0)
-                        {
-                            if (currentScan[row+testDy][0] == true)
-                            {
-                                dydx[0+5][testDy+5] += 1;
-                            }
                         }
                     }
                 }
@@ -166,7 +149,7 @@ public class MovingRadar
      * @param   dx      how much the monstor will move in the x
      * @pre row and col must be within the bounds of the radar grid
      */
-    public void updateMonsterLocation(float dy,float dx)
+    public void updateMonsterLocation(int dy,int dx)
     {
         monsterLocationRow += dx;
         monsterLocationCol += dy;
@@ -215,9 +198,9 @@ public class MovingRadar
         int highestValue = 0;
         int highDy = 0;
         int highDx = 0;
-        for(int row = 0; row <= 11; row++)
+        for(int row = 0; row <= 10; row++)
         {
-            for (int col = 0; col <= 11; col++)
+            for (int col = 0; col <= 10; col++)
             {
                 if (dydx[row][col] > highestValue)
                 {
@@ -227,8 +210,8 @@ public class MovingRadar
             }
         }
         int[] returnValue = new int[2];
-        returnValue[0] = highDy;
-        returnValue[1] = highDx;
+        returnValue[0] = highDy-5;
+        returnValue[1] = highDx-5;
         return returnValue;
     }
     
@@ -268,9 +251,9 @@ public class MovingRadar
      */
     private void injectNoise()
     {
-        for(int row = 0; row < currentScan.length; row++)
+        for(int row = 5; row < currentScan.length-5; row++)
         {
-            for(int col = 0; col < currentScan[0].length; col++)
+            for(int col = 5; col < currentScan[0].length-5; col++)
             {
                 // each cell has the specified probablily of being a false positive
                 if(Math.random() < noiseFraction)

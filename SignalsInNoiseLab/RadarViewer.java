@@ -18,8 +18,16 @@ public class RadarViewer
         // create the radar, set the monster location, and perform the initial scan
         final int ROWS = 100;
         final int COLS = 100;
-        MovingRadar radar = new MovingRadar(ROWS, COLS);
-        radar.setNoiseFraction(0.10);
+        System.out.println("what should the DY be set to? (-5-5)");
+        int DY = in.nextInt();
+        System.out.println("what should the DX be set to? (-5-5)");
+        int DX = in.nextInt();
+        System.out.println("what should the starting column be set to?");
+        int startCol = in.nextInt();
+        System.out.println("what should the starting row be set to?");
+        int startRow = in.nextInt();
+        MovingRadar radar = new MovingRadar(ROWS, COLS,DY, DX, startCol, startRow);
+        radar.setNoiseFraction(0.0001); // currently no noise
         radar.scan();
         
         JFrame frame = new JFrame();
@@ -48,8 +56,12 @@ public class RadarViewer
             
             frame.repaint();
         }
- 
-        System.out.println(radar.returnDyDx[1]);
+        
+        
+        System.out.print("Dy = ");
+        System.out.println(radar.returnDyDx()[1]);
+        System.out.print("Dx = ");
+        System.out.println(radar.returnDyDx()[0]);
     }
 
 }
